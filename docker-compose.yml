@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: device_postgres
+    environment:
+      POSTGRES_DB: device_db
+      POSTGRES_USER: device_user
+      POSTGRES_PASSWORD: device_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - devicenet
+
+  device-api:
+    build: .
+    container_name: device_api
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/device_db
+      SPRING_DATASOURCE_USERNAME: device_user
+      SPRING_DATASOURCE_PASSWORD: device_pass
+
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - devicenet
+
+volumes:
+  pgdata:
+
+networks:
+  devicenet:

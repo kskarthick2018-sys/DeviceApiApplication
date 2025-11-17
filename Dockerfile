@@ -1,9 +1,9 @@
-# Use Temurin JDK 21 (recommended for Spring Boot 3+)
+# ----------- Build Stage -----------
 FROM eclipse-temurin:21-jdk AS builder
 
 WORKDIR /app
 
-# Copy Maven files first for caching
+# Copy Maven Wrapper files first for caching
 COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn
@@ -17,7 +17,7 @@ COPY src ./src
 # Build application
 RUN ./mvnw clean package -DskipTests
 
-# ----------- Runtime Image -----------
+# ----------- Runtime Stage -----------
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
